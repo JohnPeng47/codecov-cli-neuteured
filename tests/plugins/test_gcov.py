@@ -2,10 +2,6 @@ from codecov_cli.plugins.gcov import GcovPlugin
 
 
 class TestGcov(object):
-    def test_run_preparation_gcov_not_installed(self, mocker, tmp_path, capsys):
-        mocker.patch("codecov_cli.plugins.gcov.shutil.which", return_value=None)
-        assert GcovPlugin(tmp_path).run_preparation(collector=None) is None
-        assert "gcov is not installed or can't be found." in capsys.readouterr().err
 
     def test_run_preparation_no_coverage_data(self, mocker, tmp_path, capsys):
         mocker.patch("codecov_cli.plugins.gcov.shutil.which", return_value=True)

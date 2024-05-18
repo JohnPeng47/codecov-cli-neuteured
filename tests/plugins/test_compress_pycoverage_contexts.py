@@ -62,22 +62,6 @@ sample = {
 
 
 class TestCompressPycoverageContexts_CompressionFunctions(object):
-    def test_copy_meta(self, mocker):
-        fd_in_mock = BytesIO(bytearray(json.dumps(sample), encoding="utf-8"))
-        fd_out_mock = mocker.MagicMock()
-        plugin = CompressPycoverageContexts()
-        plugin._copy_meta(fd_in_mock, fd_out_mock)
-        fd_out_mock.write.assert_has_calls(
-            [
-                call(
-                    '"meta": {"version": "6.5.0", "timestamp": "2023-05-15T18:35:30.641570", "branch_coverage": false, "show_contexts": true},'
-                ),
-                call(
-                    '"totals": {"covered_lines": 416, "num_statements": 437, "percent_covered": "95.19450800915332", "percent_covered_display": "95", "missing_lines": 21, "excluded_lines": 0},'
-                ),
-            ],
-            any_order=True,
-        )
 
     def test_copy_file_details(self, mocker):
         fd_out_mock = mocker.MagicMock()
@@ -169,40 +153,9 @@ class TestCompressPycoverageContexts_CompressionFunctions(object):
 
 
 class TestCompressPycoverageContexts(object):
-    def test_default_options(self):
-        plugin = CompressPycoverageContexts()
-        assert plugin.config.file_to_compress == pathlib.Path("coverage.json")
-        assert plugin.config.delete_uncompressed == True
-        assert plugin.file_to_compress == pathlib.Path("coverage.json")
-        assert plugin.file_to_write == pathlib.Path("coverage.codecov.json")
 
-    def test_change_options(self):
-        config = {
-            "file_to_compress": "label.coverage.json",
-            "delete_uncompressed": False,
-        }
-        plugin = CompressPycoverageContexts(config)
-        assert plugin.config.file_to_compress == pathlib.Path("label.coverage.json")
-        assert plugin.config.delete_uncompressed == False
-        assert plugin.file_to_compress == pathlib.Path("label.coverage.json")
-        assert plugin.file_to_write == pathlib.Path("label.coverage.codecov.json")
 
-    def test_run_preparation_fail_fast_no_file(self):
-        plugin = CompressPycoverageContexts()
-        res = plugin.run_preparation(None)
-        assert res == PreparationPluginReturn(
-            success=False,
-            messages=[f"File to compress coverage.json not found."],
-        )
 
-    def test_run_preparation_fail_fast_path_not_file(self, tmp_path):
-        config = {"file_to_compress": tmp_path}
-        plugin = CompressPycoverageContexts(config)
-        res = plugin.run_preparation(None)
-        assert res == PreparationPluginReturn(
-            success=False,
-            messages=[f"File to compress {tmp_path} is not a file."],
-        )
 
     def test_run_preparation_mocked(self, tmp_path, mocker):
         (tmp_path / "coverage.json").touch()

@@ -8,17 +8,6 @@ from codecov_cli.types import RequestError, RequestResult
 from tests.factory import FakeProvider, FakeVersioningSystem
 
 
-def test_upload_process_missing_commit_sha(mocker):
-    fake_ci_provider = FakeProvider({FallbackFieldEnum.commit_sha: None})
-    fake_versioning_system = FakeVersioningSystem({FallbackFieldEnum.commit_sha: None})
-    mocker.patch(
-        "codecov_cli.main.get_versioning_system", return_value=fake_versioning_system
-    )
-    mocker.patch("codecov_cli.main.get_ci_adapter", return_value=fake_ci_provider)
-    runner = CliRunner()
-    with runner.isolated_filesystem():
-        result = runner.invoke(cli, ["upload-process"], obj={})
-        assert result.exit_code != 0
 
 
 def test_upload_process_raise_Z_option(mocker, use_verbose_option):

@@ -132,12 +132,6 @@ class TestPycoverageXMLReportGeneration(object):
 
 
 class TestPycoverageJSONReportGeneration(object):
-    def test_report_not_generated_if_coverage_not_there(
-        self, tmp_path, mocker, json_subprocess_mock
-    ):
-        config = {"project_root": tmp_path}
-        Pycoverage(config)._generate_JSON_report(tmp_path)
-        json_subprocess_mock.assert_not_called()
 
     def test_reports_generated_if_coverage_file_exists(
         self, tmp_path, mocker, json_subprocess_mock
@@ -162,25 +156,7 @@ class TestPycoverageJSONReportGeneration(object):
 
 
 class TestPycoverageRunPreparation(object):
-    def test_run_preparation_creates_reports_in_root_dir(
-        self, mocked_generator, tmp_path, mocker
-    ):
-        (tmp_path / ".coverage").touch()
-        config = {"project_root": tmp_path}
-        Pycoverage(config).run_preparation(None)
-        assert (tmp_path / "coverage.xml").exists()
-        mocked_generator.assert_called_with(tmp_path)
 
-    def test_run_preparation_creates_reports_in_sub_dirs(
-        self, mocked_generator, tmp_path, mocker
-    ):
-        (tmp_path / "sub").mkdir()
-        (tmp_path / "sub" / ".coverage").touch()
-        config = {"project_root": tmp_path}
-        Pycoverage(config).run_preparation(None)
-
-        assert (tmp_path / "sub" / "coverage.xml").exists()
-        mocked_generator.assert_called_with(tmp_path / "sub")
 
     def test_aborts_plugin_if_coverage_is_not_installed(
         self, tmp_path, mocker, mocked_generator

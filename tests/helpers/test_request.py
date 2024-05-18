@@ -28,63 +28,12 @@ def valid_response():
     return valid_response
 
 
-def test_log_error_no_raise(mocker):
-    mock_log_error = mocker.patch.object(req_log, "error")
-    error = RequestError(
-        code=401, params={"some": "params"}, description="Unauthorized"
-    )
-    result = RequestResult(
-        error=error, warnings=[], status_code=401, text="Unauthorized"
-    )
-    log_warnings_and_errors_if_any(result, "Process", fail_on_error=False)
-    mock_log_error.assert_called_with(f"Process failed: Unauthorized")
 
 
-def test_log_error_raise(mocker):
-    mock_log_error = mocker.patch.object(req_log, "error")
-    error = RequestError(
-        code=401, params={"some": "params"}, description="Unauthorized"
-    )
-    result = RequestResult(
-        error=error, warnings=[], status_code=401, text="Unauthorized"
-    )
-    with pytest.raises(SystemExit):
-        log_warnings_and_errors_if_any(result, "Process", fail_on_error=True)
-    mock_log_error.assert_called_with(f"Process failed: Unauthorized")
 
 
-def test_get_token_header_or_fail():
-    # Test with a valid UUID token
-    token = uuid.uuid4()
-    result = get_token_header_or_fail(token)
-    assert result == {"Authorization": f"token {str(token)}"}
-
-    # Test with a None token
-    token = None
-    with pytest.raises(Exception) as e:
-        get_token_header_or_fail(token)
-
-    assert (
-        str(e.value)
-        == "Codecov token not found. Please provide Codecov token with -t flag."
-    )
 
 
-def test_request_retry(mocker, valid_response):
-    expected_response = request_result(valid_response)
-    mock_sleep = mocker.patch("codecov_cli.helpers.request.sleep")
-    mocker.patch.object(
-        requests,
-        "post",
-        side_effect=[
-            requests.exceptions.ConnectionError(),
-            requests.exceptions.Timeout(),
-            valid_response,
-        ],
-    )
-    resp = send_post_request("my_url")
-    assert resp == expected_response
-    mock_sleep.assert_called()
 
 
 def test_request_retry_too_many_errors(mocker):

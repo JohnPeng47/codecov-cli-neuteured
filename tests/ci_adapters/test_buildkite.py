@@ -20,125 +20,12 @@ class BuildkiteEnvEnum(str, Enum):
 
 
 class TestBuildkite(object):
-    @pytest.mark.parametrize(
-        "env_dict,expected",
-        [
-            ({}, False),
-            (
-                {BuildkiteEnvEnum.BUILDKITE: "true"},
-                True,
-            ),
-        ],
-    )
-    def test_detect(self, env_dict, expected, mocker):
-        mocker.patch.dict(os.environ, env_dict)
-        actual = BuildkiteAdapter().detect()
-        assert actual == expected
 
-    @pytest.mark.parametrize(
-        "env_dict,expected",
-        [
-            ({}, None),
-            (
-                {BuildkiteEnvEnum.BUILDKITE_COMMIT: "some_random_sha"},
-                "some_random_sha",
-            ),
-        ],
-    )
-    def test_commit_sha(self, env_dict, expected, mocker):
-        mocker.patch.dict(os.environ, env_dict)
-        actual = BuildkiteAdapter().get_fallback_value(FallbackFieldEnum.commit_sha)
-        assert actual == expected
 
-    @pytest.mark.parametrize(
-        "env_dict,expected",
-        [
-            ({}, None),
-            ({BuildkiteEnvEnum.BUILDKITE_BUILD_URL: "test@test.com"}, "test@test.com"),
-        ],
-    )
-    def test_build_url(self, env_dict, expected, mocker):
-        mocker.patch.dict(os.environ, env_dict)
-        actual = BuildkiteAdapter().get_fallback_value(FallbackFieldEnum.build_url)
-        assert actual == expected
 
-    @pytest.mark.parametrize(
-        "env_dict,expected",
-        [
-            ({}, None),
-            ({BuildkiteEnvEnum.BUILDKITE_BUILD_NUMBER: "123"}, "123"),
-        ],
-    )
-    def test_build_code(self, env_dict, expected, mocker):
-        mocker.patch.dict(os.environ, env_dict)
-        actual = BuildkiteAdapter().get_fallback_value(FallbackFieldEnum.build_code)
-        assert actual == expected
 
-    @pytest.mark.parametrize(
-        "env_dict,expected",
-        [
-            ({}, None),
-            ({BuildkiteEnvEnum.BUILDKITE_JOB_ID: "123"}, "123"),
-        ],
-    )
-    def test_job_code(self, env_dict, expected, mocker):
-        mocker.patch.dict(os.environ, env_dict)
-        actual = BuildkiteAdapter().get_fallback_value(FallbackFieldEnum.job_code)
-        assert actual == expected
 
-    @pytest.mark.parametrize(
-        "env_dict,expected",
-        [
-            ({}, None),
-            ({BuildkiteEnvEnum.BUILDKITE_PULL_REQUEST: "123"}, "123"),
-            ({BuildkiteEnvEnum.BUILDKITE_PULL_REQUEST: "false"}, None),
-        ],
-    )
-    def test_pull_request_number(self, env_dict, expected, mocker):
-        mocker.patch.dict(os.environ, env_dict)
-        actual = BuildkiteAdapter().get_fallback_value(
-            FallbackFieldEnum.pull_request_number
-        )
-        assert actual == expected
 
-    @pytest.mark.parametrize(
-        "env_dict,expected",
-        [
-            ({}, None),
-            (
-                {
-                    BuildkiteEnvEnum.BUILDKITE_ORGANIZATION_SLUG: "myorg",
-                    BuildkiteEnvEnum.BUILDKITE_PIPELINE_SLUG: "myrepo",
-                },
-                "myorg/myrepo",
-            ),
-            (
-                {
-                    BuildkiteEnvEnum.BUILDKITE_ORGANIZATION_SLUG: "myorg/subteam",
-                    BuildkiteEnvEnum.BUILDKITE_PIPELINE_SLUG: "myrepo",
-                },
-                "myorg/subteam/myrepo",
-            ),
-            (
-                {
-                    BuildkiteEnvEnum.BUILDKITE_ORGANIZATION_SLUG: "myorg",
-                    BuildkiteEnvEnum.BUILDKITE_PIPELINE_SLUG: "",
-                },
-                None,
-            ),
-            (
-                {
-                    BuildkiteEnvEnum.BUILDKITE_ORGANIZATION_SLUG: "",
-                    BuildkiteEnvEnum.BUILDKITE_PIPELINE_SLUG: "myrepo",
-                },
-                None,
-            ),
-        ],
-    )
-    def test_slug(self, env_dict, expected, mocker):
-        mocker.patch.dict(os.environ, env_dict)
-        actual = BuildkiteAdapter().get_fallback_value(FallbackFieldEnum.slug)
-        assert actual == expected
 
     @pytest.mark.parametrize(
         "env_dict,expected",

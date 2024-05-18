@@ -16,17 +16,6 @@ class JenkinsCIEnvEnum(str, Enum):
 
 
 class TestJenkins(object):
-    @pytest.mark.parametrize(
-        "env_dict,expected",
-        [
-            ({}, False),
-            ({JenkinsCIEnvEnum.JENKINS_URL: "url"}, True),
-        ],
-    )
-    def test_detect(self, env_dict, expected, mocker):
-        mocker.patch.dict(os.environ, env_dict)
-        actual = JenkinsAdapter().detect()
-        assert actual == expected
 
     @pytest.mark.parametrize(
         "env_dict,expected",

@@ -39,3 +39,16 @@ class TestBitbucket(object):
 
     def test_service_name(self):
         assert BitbucketAdapter().get_service_name() == "Bitbucket"
+
+    @pytest.mark.parametrize(
+        "ci_env, build_number, expected_detect",
+        [
+            ({"CI": "true", "BITBUCKET_BUILD_NUMBER": "1234"}, "1234", True),
+            ({"CI": "true"}, None, False),
+            ({}, None, False),
+        ],
+    )
+    def test_detect(self, ci_env, build_number, expected_detect, mocker):
+        mocker.patch.dict(os.environ, ci_env)
+        adapter = BitbucketAdapter()
+        assert adapter.detect() == expected_detect

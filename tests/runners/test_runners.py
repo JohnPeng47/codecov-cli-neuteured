@@ -9,16 +9,9 @@ from tests.factory import FakeRunner
 
 
 class TestRunners(object):
-        # TODO: Extend with other standard runners once we create them (e.g. JS)
-
-
-
-
+    # TODO: Extend with other standard runners once we create them (e.g. JS)
 
     @patch("codecov_cli.runners._load_runner_from_yaml")
-
-
-
     def test_load_runner_from_yaml_class_not_found(self, mocker):
         import tests.factory as fake_module
 
@@ -46,3 +39,18 @@ class TestRunners(object):
                 },
                 {},
             )
+
+    def test_get_runner_dynamic_loading_unable_to_load_module(self, mocker):
+        cli_config = {
+            "runners": {
+                "faultymod": {
+                    "module": "nonexistent.module",
+                    "class": "NonexistentClass",
+                }
+            }
+        }
+        mocker.patch(
+            "codecov_cli.runners.import_module", side_effect=ModuleNotFoundError
+        )
+        with pytest.raises(ModuleNotFoundError):
+            get_runner(cli_config=cli_config, runner_name="faultymod")

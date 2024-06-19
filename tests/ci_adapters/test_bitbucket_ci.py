@@ -18,12 +18,6 @@ class BitbucketEnvEnum(str, Enum):
 
 class TestBitbucket(object):
 
-
-
-
-
-
-
     @pytest.mark.parametrize(
         "env_dict,expected",
         [
@@ -42,3 +36,45 @@ class TestBitbucket(object):
             BitbucketAdapter().get_fallback_value(FallbackFieldEnum.service)
             == "bitbucket"
         )
+
+    @pytest.mark.parametrize(
+        "build_number,expected",
+        [
+            ("1234", "1234"),
+            (None, None),
+        ],
+    )
+    def test_build_code(self, build_number, expected, mocker):
+        if build_number:
+            mocker.patch.dict(os.environ, {"BITBUCKET_BUILD_NUMBER": build_number})
+        else:
+            mocker.patch.dict(os.environ, {}, clear=True)
+        assert BitbucketAdapter()._get_build_code() == expected
+
+    @pytest.mark.parametrize(
+        "build_number,expected",
+        [
+            ("1234", "1234"),
+            (None, None),
+        ],
+    )
+    def test_job_code(self, build_number, expected, mocker):
+        if build_number:
+            mocker.patch.dict(os.environ, {"BITBUCKET_BUILD_NUMBER": build_number})
+        else:
+            mocker.patch.dict(os.environ, {}, clear=True)
+        assert BitbucketAdapter()._get_job_code() == expected
+
+    @pytest.mark.parametrize(
+        "repo_full_name,expected",
+        [
+            ("org/repo", "org/repo"),
+            (None, None),
+        ],
+    )
+    def test_slug(self, repo_full_name, expected, mocker):
+        if repo_full_name:
+            mocker.patch.dict(os.environ, {"BITBUCKET_REPO_FULL_NAME": repo_full_name})
+        else:
+            mocker.patch.dict(os.environ, {}, clear=True)
+        assert BitbucketAdapter()._get_slug() == expected

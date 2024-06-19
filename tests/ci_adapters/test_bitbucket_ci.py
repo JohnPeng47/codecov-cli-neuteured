@@ -18,12 +18,6 @@ class BitbucketEnvEnum(str, Enum):
 
 class TestBitbucket(object):
 
-
-
-
-
-
-
     @pytest.mark.parametrize(
         "env_dict,expected",
         [
@@ -42,3 +36,15 @@ class TestBitbucket(object):
             BitbucketAdapter().get_fallback_value(FallbackFieldEnum.service)
             == "bitbucket"
         )
+
+    @pytest.mark.parametrize(
+        "env_dict,expected",
+        [
+            ({}, False),
+            ({"CI": "true"}, False),
+            ({"CI": "true", "BITBUCKET_BUILD_NUMBER": "12345"}, True),
+        ],
+    )
+    def test_detect(self, env_dict, expected, mocker):
+        mocker.patch.dict(os.environ, env_dict)
+        assert BitbucketAdapter().detect() == expected

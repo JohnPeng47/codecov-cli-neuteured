@@ -44,3 +44,17 @@ class TestBitrise(object):
     def test_job_code_none(self):
         adapter = BitriseCIAdapter()
         assert adapter._get_job_code() is None
+
+    @pytest.mark.parametrize(
+        "env_var, expected",
+        [
+            ({"CI": "true", "BITRISE_IO": "true"}, True),
+            ({"CI": "true", "BITRISE_IO": ""}, False),
+            ({"CI": "", "BITRISE_IO": "true"}, False),
+            ({"CI": "", "BITRISE_IO": ""}, False),
+        ],
+    )
+    def test_detect(self, env_var, expected, mocker):
+        mocker.patch.dict(os.environ, env_var)
+        adapter = BitriseCIAdapter()
+        assert adapter.detect() == expected

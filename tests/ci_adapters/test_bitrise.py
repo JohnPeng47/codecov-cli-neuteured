@@ -19,12 +19,6 @@ class BitriseEnvEnum(str, Enum):
 
 class TestBitrise(object):
 
-
-
-
-
-
-
     @pytest.mark.parametrize(
         "env_dict,expected",
         [
@@ -42,3 +36,11 @@ class TestBitrise(object):
             BitriseCIAdapter().get_fallback_value(FallbackFieldEnum.service)
             == "bitrise"
         )
+
+    def test_get_service_name(self):
+        adapter = BitriseCIAdapter()
+        assert adapter.get_service_name() == "Bitrise"
+
+    def test_job_code_none(self):
+        adapter = BitriseCIAdapter()
+        assert adapter._get_job_code() is None

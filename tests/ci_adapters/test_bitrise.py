@@ -58,3 +58,15 @@ class TestBitrise(object):
         mocker.patch.dict(os.environ, env_var)
         adapter = BitriseCIAdapter()
         assert adapter.detect() == expected
+
+    @pytest.mark.parametrize(
+        "env_var,expected",
+        [
+            ({"BITRISE_PULL_REQUEST": "42"}, "42"),
+            ({}, None),
+        ],
+    )
+    def test_pull_request_number(self, env_var, expected, mocker):
+        mocker.patch.dict(os.environ, env_var)
+        adapter = BitriseCIAdapter()
+        assert adapter._get_pull_request_number() == expected

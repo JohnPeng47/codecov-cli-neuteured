@@ -70,3 +70,15 @@ class TestBitrise(object):
         mocker.patch.dict(os.environ, env_var)
         adapter = BitriseCIAdapter()
         assert adapter._get_pull_request_number() == expected
+
+    @pytest.mark.parametrize(
+        "env_var, expected",
+        [
+            ({"BITRISE_BUILD_NUMBER": "1234"}, "1234"),
+            ({}, None),
+        ],
+    )
+    def test_get_build_code(self, env_var, expected, mocker):
+        mocker.patch.dict(os.environ, env_var)
+        adapter = BitriseCIAdapter()
+        assert adapter._get_build_code() == expected

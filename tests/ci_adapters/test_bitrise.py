@@ -82,3 +82,7 @@ class TestBitrise(object):
         mocker.patch.dict(os.environ, env_var)
         adapter = BitriseCIAdapter()
         assert adapter._get_build_code() == expected
+
+    def test_git_service_none(self):
+        adapter = BitriseCIAdapter()
+        assert adapter._get_git_service() is None
